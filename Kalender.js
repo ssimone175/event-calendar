@@ -50,11 +50,10 @@ class Calendar extends HTMLElement {
         this.shadowRoot.querySelector(".before").onclick= this.onCalendarChange.bind(this,false);
 
         this.events = [];
-        if(this.getAttribute("eventJson")){
-            fetch(this.getAttribute("eventJson"))
+        if(this.getAttribute("eventLink")){
+            fetch(this.getAttribute("eventLink"))
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     this.events = data.events;
                     this.deleteDays();
                     this.createDays();
@@ -87,8 +86,7 @@ class Calendar extends HTMLElement {
     }
 
     get mode() {
-        console.log(this.getAttribute('mode'));
-        return this.getAttribute('mode');
+        return this.getAttribute('mode') || "month";
     }
 
     get firstWeekDay() {
@@ -197,7 +195,6 @@ class Event extends HTMLElement{
     connectedCallback(){
         this.setAttribute('class', this.classes + " event weekday-"+ this.weekday);
         this.onclick=this.toggleInfo;
-        console.log(this.event);
         this.shadowRoot.getElementById("date").innerText= this.event.day;
         if(this.event.description){
             this.shadowRoot.getElementById("description").innerHTML=this.event.description + " <br><br>";
