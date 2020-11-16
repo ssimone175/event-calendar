@@ -148,6 +148,7 @@ button.before, button.next, button.before:hover, button.next:hover{
 .day.calendar .date .name, :host(.date.day) .name{
     top:auto;
     bottom:0%;
+    margin-bottom:0.5em;
 }
 :host(.date.event.day) .info{
     width:100%;
