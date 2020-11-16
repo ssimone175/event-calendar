@@ -93,6 +93,7 @@ button.before, button.next, button.before:hover, button.next:hover{
     top:100%;
     max-width:100%;
     line-height:1em;
+    text-overflow: ellipsis;
 }
 
 :host(.date.event) .info.show{
@@ -125,6 +126,8 @@ button.before, button.next, button.before:hover, button.next:hover{
 
 :host(.date.event.month) .name{
     display:none;
+
+
 }
 .month .date.oldMonth, :host(.date.oldMonth){
     color:rgba(0,0,0,0.3);

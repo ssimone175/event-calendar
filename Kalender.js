@@ -149,13 +149,13 @@ class Calendar extends HTMLElement {
             if(days[i].getMonth() < this.startDate.getMonth() || (this.startDate.getMonth()===0 && days[i].getMonth()===11)){
                 dayClass +=" oldMonth"
             }
-            let ev = undefined;
+            let ev = [];
             for(let j = 0; j< this.events.length; j++){
                 if(days[i].getDate()=== parseInt(this.events[j].day) && (days[i].getMonth()+1)=== parseInt(this.events[j].month) && days[i].getFullYear()=== parseInt(this.events[j].year)){
-                    ev = this.events[j];
+                    ev.push(this.events[j]);
                 }
             }
-            if(ev){
+            if(ev.length>0){
                 dayClass += " " + this.mode + " firstDay-" + this.firstWeekDay;
                 let event = document.createElement('calendar-event');
                 event.event = ev;
@@ -177,14 +177,16 @@ let evTempl = document.createElement('template');
 evTempl.innerHTML= `
 <link rel="stylesheet" type="text/css" href="./Components/Kalender/Kalender.css" />
  <span id="date">0</span>
-      <p class="name">Kein Titel</p>
+      <p class="name"></p>
       <div class="info">
-        <p class="title">Kein Titel</p>
-        <p class="description">
-              <span id="description">Keine Beschreibung</span>
-              <a class="btn btn-dark" href="" target="_blank" rel="noopener noreferrer">Mehr erfahren</a>
-            </p>
       </div>`;
+let infoTempl = document.createElement('template');
+infoTempl.innerHTML = `
+    <p class="title"></p>
+    <p class="description">
+        <span class="description-text">Keine Beschreibung</span>
+        <a class="btn btn-dark" href="" target="_blank" rel="noopener noreferrer">Mehr erfahren</a>
+    </p>`;
 
 class Event extends HTMLElement{
     constructor(props){
@@ -195,21 +197,27 @@ class Event extends HTMLElement{
     connectedCallback(){
         this.setAttribute('class', this.classes + " event weekday-"+ this.weekday);
         this.onclick=this.toggleInfo;
-        this.shadowRoot.getElementById("date").innerText= this.event.day;
-        if(this.event.description){
-            this.shadowRoot.getElementById("description").innerHTML=this.event.description + " <br><br>";
-        }else{
-            this.shadowRoot.getElementById("description").remove();
+        this.shadowRoot.getElementById("date").innerText= this.event[0].day;
+        for(let i =0; i < this.event.length; i ++){
+            let info = infoTempl.content.cloneNode(true);
+            if(this.event[i].description.trim()){
+                info.querySelector(".description-text").innerHTML=this.event[i].description + " <br><br>";
+            }else{
+                info.querySelector(".description-text").remove();
+            }
+            if(this.event[i].link.trim()){
+                info.querySelector(".btn").setAttribute("href", this.event[i].link);
+            }else{
+                info.querySelector(".btn").remove();
+            }
+            this.shadowRoot.querySelector(".name").innerText+= " " + this.event[i].name + " ";
+            info.querySelector(".title").innerText=this.event[i].name;
+
+            this.shadowRoot.querySelector(".info").appendChild(info);
         }
-        if(this.event.link){
-            this.shadowRoot.querySelector(".btn").setAttribute("href", this.event.link || " ");
-        }else{
-            this.shadowRoot.querySelector(".btn").remove();
-        }
-        let name = this.shadowRoot.querySelectorAll(".name, .title");
-        for(let i = 0; i < name.length; i++){
-            name[i].innerText= this.event.name || " ";
-        }
+        if(this.shadowRoot.querySelector(".name").innerText.length>14){
+            this.shadowRoot.querySelector(".name").innerText=this.shadowRoot.querySelector(".name").innerText.slice(0,14)+"...";
+        };
     }
     toggleInfo(){
         if(this.shadowRoot.querySelector('.info').getAttribute('class').includes("show",0)){
