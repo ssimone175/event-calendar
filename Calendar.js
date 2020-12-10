@@ -170,12 +170,15 @@ class Calendar extends HTMLElement {
         this.shadowRoot.getElementById("month").innerText=getMonthName(this.startDate.getMonth()) + " " + this.startDate.getFullYear();
         this.shadowRoot.querySelector(".next").onclick= this.onCalendarChange.bind(this,true);
         this.shadowRoot.querySelector(".before").onclick= this.onCalendarChange.bind(this,false);
-        this.events = [];
+        this.events = [{name:"Wegen Corona geschlossen",day:"1",month:"12",year:"2020",
+            description:"Bahn auf behördliche Anordnung wegen Corona nicht in Betrieb", link:"https://hochgrat.de"}];
         if(this.getAttribute("eventLink")){
             fetch(this.getAttribute("eventLink"))
                 .then(response => response.json())
                 .then(data => {
-                    this.events = data.events;
+                    if(data.events){
+                        this.events = data.events;
+                    }
                     this.deleteDays();
                     this.createDays();
                 });
